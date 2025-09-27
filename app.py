@@ -64,10 +64,11 @@ countries: Dict[str, Dict[str, str]] = {
     "au": {"gl": "AU", "hl": "en-AU", "lang": "en"},
 }
 
-# Updated RSS feeds with verified working URLs
+# Updated RSS feeds with World category
 rss_feeds: Dict[str, Dict[str, str]] = {
     "us": {
         "top": "https://news.yahoo.com/rss",
+        "world": "https://news.yahoo.com/rss/world",
         "business": "https://news.yahoo.com/rss/business",
         "science": "https://news.yahoo.com/rss/science",
         "sports": "https://news.yahoo.com/rss/sports",
@@ -78,6 +79,7 @@ rss_feeds: Dict[str, Dict[str, str]] = {
     },
     "gb": {
         "top": "https://feeds.bbci.co.uk/news/rss.xml",
+        "world": "https://feeds.bbci.co.uk/news/world/rss.xml",
         "business": "https://feeds.bbci.co.uk/news/business/rss.xml",
         "science": "https://feeds.bbci.co.uk/news/science_and_environment/rss.xml",
         "sports": "https://feeds.bbci.co.uk/sport/rss.xml",
@@ -87,17 +89,19 @@ rss_feeds: Dict[str, Dict[str, str]] = {
         "politics": "https://feeds.bbci.co.uk/news/politics/rss.xml",
     },
     "in": {
-        "top": "https://timesofindia.indiatimes.com/rssfeedstopstories.cms",
-        "business": "https://timesofindia.indiatimes.com/rssfeeds/1898055.cms",
-        "science": "https://timesofindia.indiatimes.com/rssfeeds/2128805.cms",
-        "sports": "https://timesofindia.indiatimes.com/rssfeeds/4719148.cms",
-        "technology": "https://timesofindia.indiatimes.com/rssfeeds/66949542.cms",
-        "entertainment": "https://timesofindia.indiatimes.com/rssfeeds/1081479906.cms",
-        "health": "https://timesofindia.indiatimes.com/rssfeeds/10672306.cms",
-        "politics": "https://timesofindia.indiatimes.com/rssfeeds/3835328.cms",
+        "top": "http://timesofindia.indiatimes.com/rssfeedstopstories.cms",
+        "world": "http://timesofindia.indiatimes.com/rssfeeds/296589292.cms",
+        "business": "http://timesofindia.indiatimes.com/rssfeeds/1898055.cms",
+        "science": "http://timesofindia.indiatimes.com/rssfeeds/-2128672765.cms",
+        "sports": "http://timesofindia.indiatimes.com/rssfeeds/4719148.cms",
+        "technology": "http://timesofindia.indiatimes.com/rssfeeds/66949542.cms",
+        "entertainment": "http://timesofindia.indiatimes.com/rssfeeds/1081479906.cms",
+        "health": "http://timesofindia.indiatimes.com/rssfeeds/2886704.cms",
+        "politics": "https://timesofindia.indiatimes.com/blogs/politics/feed",
     },
     "ca": {
         "top": "https://www.cbc.ca/webfeed/rss/rss-topstories",
+        "world": "https://www.cbc.ca/webfeed/rss/rss-world",
         "business": "https://www.cbc.ca/webfeed/rss/rss-business",
         "science": "https://www.cbc.ca/news/science/feed",
         "sports": "https://www.cbc.ca/webfeed/rss/rss-sports",
@@ -108,14 +112,15 @@ rss_feeds: Dict[str, Dict[str, str]] = {
     },
     "au": {
         "top": "https://www.abc.net.au/news/feed/51120/rss.xml",
-        "business": "https://www.abc.net.au/news/business/rss.xml",
-        "science": "https://www.abc.net.au/news/science/rss.xml",
-        "sports": "https://www.abc.net.au/news/sport/rss.xml",
-        "technology": "https://www.abc.net.au/news/technology/rss.xml",
-        "entertainment": "https://www.abc.net.au/news/arts/rss.xml",
-        "health": "https://www.abc.net.au/news/health/rss.xml",
-        "politics": "https://www.abc.net.au/news/politics/rss.xml",
-    }
+        "world": "https://www.abc.net.au/news/feed/46182/rss.xml",  # World news feed
+        "business": "https://www.abc.net.au/news/feed/51892/rss.xml",
+        "science": "https://www.abc.net.au/news/feed/52092/rss.xml",
+        "sports": "https://www.abc.net.au/news/feed/51138/rss.xml",
+        "technology": "https://www.abc.net.au/news/feed/51262/rss.xml",
+        "entertainment": "https://www.abc.net.au/news/feed/51142/rss.xml",
+        "health": "https://www.abc.net.au/news/feed/51244/rss.xml",
+        "politics": "https://www.abc.net.au/news/feed/50010/rss.xml",
+    },
 }
 
 class NewsItem(BaseModel):
