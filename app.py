@@ -560,17 +560,75 @@ async def search_news(
         encoded_query = quote(query)
         rss_url = f"https://www.bing.com/news/search?q={encoded_query}&format=rss"
 
-        basic_articles = fetch_rss(rss_url)
-        if not basic_articles:
-            logger.warning(f"No search results for '{query}'")
-            response_data = {
-                "status": "ok",
-                "page": page,
-                "per_page": per_page,
-                "total_results": 0,
-                "articles": []
+        # Simple RSS fetch for search (abridged from original)
+        try:
+            headers = {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36',
+                'Accept': 'application/rss+xml, application/xml, text/xml, */*',
             }
-            return JSONResponse(content=response_data)
+            session = requests.Session()
+            retry_strategy = Retry(total=3, backoff_factor=2, status_forcelist=[403, 503, 504])
+            adapter = HTTPAdapter(max_retries=retry_strategy)
+            session.mount("http://", adapter)
+            session.mount("https://", adapter)
+            
+            response = session.get(rss_url, headers=headers, timeout=15)
+            response.raise_for_status()
+            
+            import feedparser
+            feed = feedparser.parse(response.content)
+            
+            basic_articles = []
+            for entry in (feed.entries or [])[:100]:
+                if not hasattr(entry, 'link') or not entry.link:
+                    continue
+                title = getattr(entry, 'title', '') or ""
+                title = html.unescape(title).strip()
+                url = entry.link
+                date_str = datetime.now().isoformat()
+                if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                    try:
+                        date_str = datetime(*entry.published_parsed[:6]).isoformat()
+                    except:
+                        pass
+                # Source: Use news_source, fallback to parsed domain from real URL
+                source = entry.get('news_source', 'Unknown Source')
+                try:
+                    parsed = urlparse(url)
+                    query_params = parse_qs(parsed.query)
+                    real_url_param = query_params.get('url', [''])[0]
+                    if real_url_param:
+                        real_url = unquote(real_url_param)
+                        parsed_real = urlparse(real_url)
+                        source = parsed_real.netloc.replace('www.', '').rstrip('/')
+                        url = real_url  # Use direct URL
+                except Exception:
+                    source = entry.get('news_source', 'Unknown Source')
+                description = ""
+                if hasattr(entry, 'summary'):
+                    desc_text = BeautifulSoup(entry.summary, 'html.parser').get_text().strip()
+                    description = desc_text[:MAX_SUMMARY_CHARS] + "..." if len(desc_text) > MAX_SUMMARY_CHARS else desc_text
+                # FIXED: Primary image from news_image, fallback to first <img src> in summary HTML
+                image_url = entry.get('news_image', '')
+                if not image_url and hasattr(entry, 'summary'):
+                    soup = BeautifulSoup(entry.summary, 'html.parser')
+                    img_tag = soup.find('img')
+                    if img_tag and img_tag.get('src'):
+                        image_url = img_tag['src']
+                        # Handle relative URLs (rare for Bing, but safe)
+                        if image_url.startswith('/'):
+                            image_url = urljoin(rss_url, image_url)
+                basic_articles.append({
+                    "title": title,
+                    "date": date_str,
+                    "source": source,
+                    "url": url,
+                    "image_url": image_url,
+                    "description": description
+                })
+        except Exception as se:
+            logger.warning(f"Search RSS fetch failed: {str(se)}")
+            basic_articles = []
 
         all_articles = basic_articles
         total_results = len(all_articles)
